@@ -129,7 +129,7 @@ int arc(int out, char* dir)
             in = open(entry->d_name, O_RDONLY);
             if(in == -1)
             {
-           	printf("Ошибка при открытии файла!")
+           	printf("Ошибка при открытии файла!");
            	return 1;
             }
             stat(entry->d_name, &statbuf);
@@ -154,9 +154,9 @@ int StartArc()
     scanf("%s", filepath);
     //создаем архив
     int out = open("arcive.arc", O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
-    iif(out == -1)
+    if(out == -1)
     {
-    	printf("Ошибка записи!")
+    	printf("Ошибка записи!");
     	return 1;
     }
     arc(out, filepath);
@@ -184,7 +184,7 @@ int ReadFromFile(int in)
     out = open(Outfile, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
     if(out == -1)
     {
-    	printf("Ошибка записи!")
+    	printf("Ошибка записи!");
     	return 1;
     }
 
@@ -253,9 +253,9 @@ int dearc(const char* filepath)
 
     //открываем архив
     in = open("arcive.arc", O_RDONLY);
-    if(out == -1)
+    if(in == -1)
     {
-    	printf("Ошибка открытия архива!")
+    	printf("Ошибка открытия архива!");
     	return 1;
     }
     ReadCat(in);

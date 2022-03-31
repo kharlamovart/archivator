@@ -24,10 +24,12 @@
 На вход архиватора должен подаваться именно каталог
 */
 
+const int FILENAME_SIZE = 255;
+
 int WriteToFile(int in, int out, char* filepath, struct stat statbuf)
 {
     char buf;
-    char longbuf[255];
+    char longbuf[FILENAME_SIZE];
     int i = 0;
     int filesize = 0;
     int readsize = 0;
@@ -125,6 +127,11 @@ int arc(int out, char* dir)
             printf("%s\n", entry->d_name);
             //открываем данный файл
             in = open(entry->d_name, O_RDONLY);
+            if(in == -1)
+            {
+           	printf("Ошибка при открытии файла!")
+           	return 1;
+            }
             stat(entry->d_name, &statbuf);
             WriteToFile(in, out, entry->d_name, statbuf);
             close(in);
@@ -143,28 +150,31 @@ int arc(int out, char* dir)
 }
 int StartArc()
 {
-    char* filepath;
-    scanf("%s", &filepath);
+    char filepath[FILENAME_SIZE];
+    scanf("%s", filepath);
     //создаем архив
     int out = open("arcive.arc", O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
-    arc(out, &filepath);
+    iif(out == -1)
+    {
+    	printf("Ошибка записи!")
+    	return 1;
+    }
+    arc(out, filepath);
     close(out);
 }
 
 int ReadFromFile(int in)
 {
     char buf;
-    //char longbuf[255];
     int out;
-    int namesize;
     int filesize = 0;
     int readsize = 0;
 
-    char Outfile[255];
+    char Outfile[FILENAME_SIZE];
     struct stat statbuf;
 
     //читаем название файла
-    read(in, &Outfile, 255);
+    read(in, &Outfile, FILENAME_SIZE);
     //читаем размер файла
     read(in, &filesize, sizeof(int));
     //читаем размер для чтения
@@ -172,8 +182,13 @@ int ReadFromFile(int in)
 
     //создаем "разархивированный" файл
     out = open(Outfile, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
+    if(out == -1)
+    {
+    	printf("Ошибка записи!")
+    	return 1;
+    }
 
-    printf("Name of file %s\n", &Outfile);
+    printf("Name of file %s\n", Outfile);
     printf("Size of file %d bytes\n", filesize);
 
 
@@ -189,18 +204,13 @@ int ReadFromFile(int in)
 
 int ReadCat(int in)
 {
-    char buf;
-    //char longbuf[255];
-    int out;
     int namesize;
-    int filesize = 0;
-    int readsize = 0;
     int numoffiles;
     int IsCat = 0;
 
     int check;
 
-    char outfile[255];
+    char outfile[FILENAME_SIZE];
     struct stat statbuf;
     //читаем информацию о том, каталог это или нет
     check = read(in, &IsCat, sizeof(int));
@@ -210,12 +220,12 @@ int ReadCat(int in)
     if(IsCat != 0)
     {
         //считываем название, кол-во файлов
-        check = read(in, outfile, 255);
+        check = read(in, outfile, FILENAME_SIZE);
         printf("Bytes read: %d\n", check);
         check = read(in, &numoffiles, sizeof(int));
         printf("Bytes read: %d\n", check);
         printf("Num of files: %d\n",  numoffiles);
-        printf("%s\n", &outfile);
+        printf("%s\n", outfile);
         //создаем директорию с нужным названием
         //и заходим в нее
         mkdir(outfile, 
@@ -239,14 +249,15 @@ int ReadCat(int in)
 int dearc(const char* filepath)
 {
 
-    //char longbuf[255];
-    int in, out;
-    int namesize;
-    int filesize = 0;
-
+    int in;
 
     //открываем архив
     in = open("arcive.arc", O_RDONLY);
+    if(out == -1)
+    {
+    	printf("Ошибка открытия архива!")
+    	return 1;
+    }
     ReadCat(in);
     close(in);
 
